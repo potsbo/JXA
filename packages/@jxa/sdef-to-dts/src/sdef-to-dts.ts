@@ -171,7 +171,10 @@ const recordToJSONSchema = (command: Record | Class | ClassExtension, typeDefs: 
         properties[prop.name] = {
             type: prop.type,
             description: prop.description,
-            enum: prop.enum,
+        }
+
+        if (prop.enum) {
+            properties[prop.name].enum = prop.enum;
         }
     });
     const required = propertiesList.filter(param => {
