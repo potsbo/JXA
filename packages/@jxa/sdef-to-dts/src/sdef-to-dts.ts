@@ -77,24 +77,36 @@ interface Enumeration extends RootNode {
     name: "enumeration";
 }
 
-const convertJSONSchemaType = (type: string, typeDefs: any): string => {
+const convertJSONSchemaType = (type: string, typeDefs: any): { type: string, enum?: string[] } | { tsType: string } => {
     if (typeDefs[type]) {
-        return "string";
+        return { type: "string", enum: typeDefs[type].enums };
     }
     switch (type) {
+        case "type":
         case "text":
-            return "string";
+            return { type: "string" };
+        case "real":
+            return { type: "number" };
         case "number":
         case "integer":
-            return "integer";
+            return { type: "integer" };
         case "boolean":
-            return "boolean";
+            return { type: "boolean" };
+        case "rectangle":
         case "Any":
+        case "any":
+        case "record":
+        case "alias":
+        case "bounding rectangle":
+        case "RGB color":
+        case "RGBColor":
         case "type class":
-            return "any";
+            return { type: "any" };
     }
-    // TODO: can we support custom type?
-    return "any";
+    if (typeof type !== "string") {
+        return { type: "any" };
+    }
+    return { tsType: pascalCase(type) };
 };
 const convertType = (type: string, namespace: string, definedJSONSchemaList: JSONSchema[]): "number" | "string" | "boolean" | string => {
     switch (type) {
@@ -106,6 +118,7 @@ const convertType = (type: string, namespace: string, definedJSONSchemaList: JSO
         case "boolean":
             return "boolean";
         case "Any":
+        case "RGB color":
         case "type class":
             return "any";
     }
@@ -117,7 +130,7 @@ const convertType = (type: string, namespace: string, definedJSONSchemaList: JSO
     return isTypeDefinedAsRecord ? `${namespace}.${otherType}` : "any";
 };
 
-const createOptionalParameter = (name: string, parameters: Node[]): Promise<string | null> => {
+const createOptionalParameter = (name: string, parameters: Node[], typeDefs: { [key: string]: { enums: string[] } }): Promise<string | null> => {
     if (parameters.length === 0) {
         return Promise.resolve(null);
     }
@@ -125,13 +138,13 @@ const createOptionalParameter = (name: string, parameters: Node[]): Promise<stri
         return {
             name: camelCase(param.attributes.name),
             description: param.attributes.description,
-            type: convertJSONSchemaType(param.attributes.type, {})
+            typeInfo: convertJSONSchemaType(param.attributes.type, typeDefs)
         }
     });
     const properties: { [index: string]: any } = {};
     propertyMap.forEach(prop => {
         properties[prop.name] = {
-            type: prop.type,
+            ...prop.typeInfo,
             description: prop.description
         }
     });
@@ -161,7 +174,7 @@ const recordToJSONSchema = (command: Record | Class | ClassExtension, typeDefs: 
         return {
             name: camelCase(param.attributes.name),
             description: param.attributes.description,
-            type: convertJSONSchemaType(param.attributes.type, typeDefs),
+            typeInfo: convertJSONSchemaType(param.attributes.type, typeDefs),
             enum: typeDefs[param.attributes.type]?.enums,
         }
     });
@@ -169,7 +182,7 @@ const recordToJSONSchema = (command: Record | Class | ClassExtension, typeDefs: 
     const properties: { [index: string]: any } = {};
     propertyMap.forEach(prop => {
         properties[prop.name] = {
-            type: prop.type,
+            ...prop.typeInfo,
             description: prop.description,
         }
 
@@ -192,7 +205,7 @@ const recordToJSONSchema = (command: Record | Class | ClassExtension, typeDefs: 
     }
 };
 
-const commandToDeclare = async (namespace: string, command: Command, recordSchema: JSONSchema[], optionalMap: Map<string, number>): Promise<{
+const commandToDeclare = async (namespace: string, command: Command, recordSchema: JSONSchema[], optionalMap: Map<string, number>, typeDefs: any): Promise<{
     header: string;
     body: string;
 }> => {
@@ -224,7 +237,7 @@ const commandToDeclare = async (namespace: string, command: Command, recordSchem
         optionalParameterTypeName += String(optionalParameterTypeNameCount);
     }
     optionalMap.set(optionalParameterTypeName, optionalParameterTypeNameCount + 1);
-    const optionalParameterType = await createOptionalParameter(optionalParameterTypeName, parameters);
+    const optionalParameterType = await createOptionalParameter(optionalParameterTypeName, parameters, typeDefs);
     const optionalParameters = optionalParameterType ? `option?: ${namespace}.${optionalParameterTypeName}` : "";
     const optionalParameterDoc = optionalParameterType ? `* @param option` : "";
     const result = command.children.filter(node => {
@@ -317,7 +330,7 @@ export const transform = async (namespace: string, sdefContent: string) => {
     const classExtensionDefinitions = await schemaToInterfaces(classExtendSchemaList);
     const optionalBindingMap = new Map<string, number>();
     const functionDefinitions = await Promise.all(commands.map(command => {
-        return commandToDeclare(namespace, command, recordSchemaList.concat(classSchemaList, classExtendSchemaList), optionalBindingMap);
+        return commandToDeclare(namespace, command, recordSchemaList.concat(classSchemaList, classExtendSchemaList), optionalBindingMap, typeDefs);
     }));
     const functionDefinitionHeaders = functionDefinitions.map(def => def.header);
     const functionDefinitionBodies = functionDefinitions.map(def => def.body);

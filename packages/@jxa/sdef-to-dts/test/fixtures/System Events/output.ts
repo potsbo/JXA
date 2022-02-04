@@ -103,31 +103,31 @@ export namespace SystemEvents {
    /**
     * the blank CD insertion preference
     */
-   blankCD(): unknown;
+   blankCD(): InsertionPreference;
    /**
     * the blank DVD insertion preference
     */
-   blankDVD(): unknown;
+   blankDVD(): InsertionPreference;
    /**
     * the blank BD insertion preference
     */
-   blankBD(): unknown;
+   blankBD(): InsertionPreference;
    /**
     * the music CD insertion preference
     */
-   musicCD(): unknown;
+   musicCD(): InsertionPreference;
    /**
     * the picture CD insertion preference
     */
-   pictureCD(): unknown;
+   pictureCD(): InsertionPreference;
    /**
     * the video DVD insertion preference
     */
-   videoDVD(): unknown;
+   videoDVD(): InsertionPreference;
    /**
     * the video BD insertion preference
     */
-   videoBD(): unknown;
+   videoBD(): InsertionPreference;
  }
 
  /* tslint:disable */
@@ -177,7 +177,7 @@ export namespace SystemEvents {
    /**
     * number of seconds to wait between changing the desktop picture
     */
-   changeInterval(): unknown;
+   changeInterval(): number;
    /**
     * name of display on which this desktop appears
     */
@@ -226,7 +226,7 @@ export namespace SystemEvents {
    /**
     * size/height of the items (between 0.0 (minimum) and 1.0 (maximum))
     */
-   dockSize(): unknown;
+   dockSize(): number;
    /**
     * is magnification on or off?
     */
@@ -234,7 +234,7 @@ export namespace SystemEvents {
    /**
     * maximum magnification size when magnification is on (between 0.0 (minimum) and 1.0 (maximum))
     */
-   magnificationSize(): unknown;
+   magnificationSize(): number;
    /**
     * minimization effect
     */
@@ -383,7 +383,7 @@ export namespace SystemEvents {
    /**
     * the current location
     */
-   currentLocation(): unknown;
+   currentLocation(): Location;
  }
 
  /* tslint:disable */
@@ -404,7 +404,7 @@ export namespace SystemEvents {
    /**
     * the currently selected configuration
     */
-   currentConfiguration(): unknown;
+   currentConfiguration(): Configuration;
    /**
     * the unique identifier for the service
     */
@@ -412,7 +412,7 @@ export namespace SystemEvents {
    /**
     * the interface the service is built on
     */
-   interface(): unknown;
+   interface(): Interface;
    /**
     * the type of service
     */
@@ -605,47 +605,47 @@ export namespace SystemEvents {
    /**
     * The Apple Menu Items folder
     */
-   appleMenuFolder(): unknown;
+   appleMenuFolder(): Folder;
    /**
     * The Control Panels folder
     */
-   controlPanelsFolder(): unknown;
+   controlPanelsFolder(): Folder;
    /**
     * The Control Strip Modules folder
     */
-   controlStripModulesFolder(): unknown;
+   controlStripModulesFolder(): Folder;
    /**
     * The Classic Desktop folder
     */
-   desktopFolder(): unknown;
+   desktopFolder(): Folder;
    /**
     * The Extensions folder
     */
-   extensionsFolder(): unknown;
+   extensionsFolder(): Folder;
    /**
     * The Fonts folder
     */
-   fontsFolder(): unknown;
+   fontsFolder(): Folder;
    /**
     * The Launcher Items folder
     */
-   launcherItemsFolder(): unknown;
+   launcherItemsFolder(): Folder;
    /**
     * The Classic Preferences folder
     */
-   preferencesFolder(): unknown;
+   preferencesFolder(): Folder;
    /**
     * The Shutdown Items folder
     */
-   shutdownFolder(): unknown;
+   shutdownFolder(): Folder;
    /**
     * The StartupItems folder
     */
-   startupItemsFolder(): unknown;
+   startupItemsFolder(): Folder;
    /**
     * The System folder
     */
-   systemFolder(): unknown;
+   systemFolder(): Folder;
  }
 
  /* tslint:disable */
@@ -730,11 +730,11 @@ export namespace SystemEvents {
    /**
     * the folder or disk which has this disk item as an element
     */
-   container(): unknown;
+   container(): DiskItem;
    /**
     * the date on which the disk item was created
     */
-   creationDate(): unknown;
+   creationDate(): Date;
    /**
     * the name of the disk item as displayed in the User Interface
     */
@@ -746,7 +746,7 @@ export namespace SystemEvents {
    /**
     * the date on which the disk item was last modified
     */
-   modificationDate(): unknown;
+   modificationDate(): Date;
    /**
     * the name of the disk item
     */
@@ -803,23 +803,23 @@ export namespace SystemEvents {
    /**
     * The Application Support folder
     */
-   applicationSupportFolder(): unknown;
+   applicationSupportFolder(): Folder;
    /**
     * The Applications folder
     */
-   applicationsFolder(): unknown;
+   applicationsFolder(): Folder;
    /**
     * The Desktop Pictures folder
     */
-   desktopPicturesFolder(): unknown;
+   desktopPicturesFolder(): Folder;
    /**
     * The Folder Action Scripts folder
     */
-   folderActionScriptsFolder(): unknown;
+   folderActionScriptsFolder(): Folder;
    /**
     * The Fonts folder
     */
-   fontsFolder(): unknown;
+   fontsFolder(): Folder;
    /**
     * the unique identifier of the domain
     */
@@ -827,7 +827,7 @@ export namespace SystemEvents {
    /**
     * The Library folder
     */
-   libraryFolder(): unknown;
+   libraryFolder(): Folder;
    /**
     * the name of the domain
     */
@@ -835,31 +835,31 @@ export namespace SystemEvents {
    /**
     * The Preferences folder
     */
-   preferencesFolder(): unknown;
+   preferencesFolder(): Folder;
    /**
     * The Scripting Additions folder
     */
-   scriptingAdditionsFolder(): unknown;
+   scriptingAdditionsFolder(): Folder;
    /**
     * The Scripts folder
     */
-   scriptsFolder(): unknown;
+   scriptsFolder(): Folder;
    /**
     * The Shared Documents folder
     */
-   sharedDocumentsFolder(): unknown;
+   sharedDocumentsFolder(): Folder;
    /**
     * The Speakable Items folder
     */
-   speakableItemsFolder(): unknown;
+   speakableItemsFolder(): Folder;
    /**
     * The Utilities folder
     */
-   utilitiesFolder(): unknown;
+   utilitiesFolder(): Folder;
    /**
     * The Automator Workflows folder
     */
-   workflowsFolder(): unknown;
+   workflowsFolder(): Folder;
  }
 
  /* tslint:disable */
@@ -985,47 +985,47 @@ export namespace SystemEvents {
    /**
     * The user's Desktop folder
     */
-   desktopFolder(): unknown;
+   desktopFolder(): Folder;
    /**
     * The user's Documents folder
     */
-   documentsFolder(): unknown;
+   documentsFolder(): Folder;
    /**
     * The user's Downloads folder
     */
-   downloadsFolder(): unknown;
+   downloadsFolder(): Folder;
    /**
     * The user's Favorites folder
     */
-   favoritesFolder(): unknown;
+   favoritesFolder(): Folder;
    /**
     * The user's Home folder
     */
-   homeFolder(): unknown;
+   homeFolder(): Folder;
    /**
     * The user's Movies folder
     */
-   moviesFolder(): unknown;
+   moviesFolder(): Folder;
    /**
     * The user's Music folder
     */
-   musicFolder(): unknown;
+   musicFolder(): Folder;
    /**
     * The user's Pictures folder
     */
-   picturesFolder(): unknown;
+   picturesFolder(): Folder;
    /**
     * The user's Public folder
     */
-   publicFolder(): unknown;
+   publicFolder(): Folder;
    /**
     * The user's Sites folder
     */
-   sitesFolder(): unknown;
+   sitesFolder(): Folder;
    /**
     * The Temporary Items folder
     */
-   temporaryItemsFolder(): unknown;
+   temporaryItemsFolder(): Folder;
  }
 
  /* tslint:disable */
@@ -1712,7 +1712,7 @@ export namespace SystemEvents {
    /**
     * the class of the UI Element, which identifies it function
     */
-   class(): unknown;
+   class(): string;
    /**
     * the accessibility description, if available; otherwise, the role description
     */
@@ -1833,7 +1833,7 @@ export namespace SystemEvents {
    /**
     * the kind of data stored in the property list item: boolean/data/date/list/number/record/string
     */
-   kind(): unknown;
+   kind(): string;
    /**
     * the name of the property list item ( if any )
     */
@@ -1899,7 +1899,7 @@ export namespace SystemEvents {
    /**
     * the creation time of the QuickTime file
     */
-   creationTime(): unknown;
+   creationTime(): Date;
    /**
     * the size of the QuickTime file data
     */
@@ -1919,7 +1919,7 @@ export namespace SystemEvents {
    /**
     * the modification time of the QuickTime file
     */
-   modificationTime(): unknown;
+   modificationTime(): Date;
    /**
     * the preferred rate of the QuickTime file
     */
@@ -1980,7 +1980,7 @@ export namespace SystemEvents {
    /**
     * the sample rate of the audio in kHz
     */
-   audioSampleRate(): unknown;
+   audioSampleRate(): number;
    /**
     * the size of uncompressed audio samples in bits
     */
@@ -1988,7 +1988,7 @@ export namespace SystemEvents {
    /**
     * the creation time of the track
     */
-   creationTime(): unknown;
+   creationTime(): Date;
    /**
     * the data format
     */
@@ -2028,7 +2028,7 @@ export namespace SystemEvents {
    /**
     * the modification time of the track
     */
-   modificationTime(): unknown;
+   modificationTime(): Date;
    /**
     * the name of the track
     */
@@ -2173,7 +2173,7 @@ export namespace SystemEvents {
    /**
     * the time at which the desktop printer should print the document
     */
-   requestedPrintTime(): unknown;
+   requestedPrintTime(): Date;
    /**
     * how errors are handled
     */
@@ -2226,7 +2226,7 @@ export namespace SystemEvents {
    /**
     * The class from which this class inherits
     */
-   superclass(): unknown;
+   superclass(): ScriptingClass;
  }
 
  /* tslint:disable */
@@ -2255,7 +2255,7 @@ export namespace SystemEvents {
    /**
     * The direct parameter of the command
     */
-   directParameter(): unknown;
+   directParameter(): ScriptingParameter;
    /**
     * Is the command hidden?
     */
@@ -2263,7 +2263,7 @@ export namespace SystemEvents {
    /**
     * The object or data returned by this command
     */
-   scriptingResult(): unknown;
+   scriptingResult(): ScriptingResultObject;
    /**
     * The name of the suite to which this command belongs
     */
@@ -2524,7 +2524,7 @@ export namespace SystemEvents {
    /**
     * the currently logged in user
     */
-   currentUser(): unknown;
+   currentUser(): User;
  }
 
  /* tslint:disable */
@@ -2541,7 +2541,7 @@ export namespace SystemEvents {
    /**
     * a collection of appearance preferences
     */
-   appearancePreferences(): unknown;
+   appearancePreferences(): AppearancePreferencesObject;
  }
 
  /* tslint:disable */
@@ -2558,7 +2558,7 @@ export namespace SystemEvents {
    /**
     * the preferences for the current user when a CD or DVD is inserted
     */
-   CDAndDvdPreferences(): unknown;
+   CDAndDvdPreferences(): CDAndDvdPreferencesObject;
  }
 
  /* tslint:disable */
@@ -2575,7 +2575,7 @@ export namespace SystemEvents {
    /**
     * the primary desktop
     */
-   currentDesktop(): unknown;
+   currentDesktop(): Desktop;
  }
 
  /* tslint:disable */
@@ -2592,7 +2592,7 @@ export namespace SystemEvents {
    /**
     * the preferences for the current user's dock
     */
-   dockPreferences(): unknown;
+   dockPreferences(): DockPreferencesObject;
  }
 
  /* tslint:disable */
@@ -2621,7 +2621,7 @@ export namespace SystemEvents {
    /**
     * the preferences for the current user's network
     */
-   networkPreferences(): unknown;
+   networkPreferences(): NetworkPreferencesObject;
  }
 
  /* tslint:disable */
@@ -2638,11 +2638,11 @@ export namespace SystemEvents {
    /**
     * the currently selected screen saver
     */
-   currentScreenSaver(): unknown;
+   currentScreenSaver(): ScreenSaver;
    /**
     * the preferences common to all screen savers
     */
-   screenSaverPreferences(): unknown;
+   screenSaverPreferences(): ScreenSaverPreferencesObject;
  }
 
  /* tslint:disable */
@@ -2671,7 +2671,7 @@ export namespace SystemEvents {
    /**
     * a collection of security preferences
     */
-   securityPreferences(): unknown;
+   securityPreferences(): SecurityPreferencesObject;
  }
 
  /* tslint:disable */
@@ -2688,127 +2688,127 @@ export namespace SystemEvents {
    /**
     * The Application Support folder
     */
-   applicationSupportFolder(): unknown;
+   applicationSupportFolder(): Folder;
    /**
     * The user's Applications folder
     */
-   applicationsFolder(): unknown;
+   applicationsFolder(): Folder;
    /**
     * the collection of folders belonging to the Classic System
     */
-   classicDomain(): unknown;
+   classicDomain(): ClassicDomainObject;
    /**
     * The user's Desktop folder
     */
-   desktopFolder(): unknown;
+   desktopFolder(): Folder;
    /**
     * The Desktop Pictures folder
     */
-   desktopPicturesFolder(): unknown;
+   desktopPicturesFolder(): Folder;
    /**
     * The user's Documents folder
     */
-   documentsFolder(): unknown;
+   documentsFolder(): Folder;
    /**
     * The user's Downloads folder
     */
-   downloadsFolder(): unknown;
+   downloadsFolder(): Folder;
    /**
     * The user's Favorites folder
     */
-   favoritesFolder(): unknown;
+   favoritesFolder(): Folder;
    /**
     * The user's Folder Action Scripts folder
     */
-   folderActionScriptsFolder(): unknown;
+   folderActionScriptsFolder(): Folder;
    /**
     * The Fonts folder
     */
-   fontsFolder(): unknown;
+   fontsFolder(): Folder;
    /**
     * The Home folder of the currently logged in user
     */
-   homeFolder(): unknown;
+   homeFolder(): Folder;
    /**
     * The Library folder
     */
-   libraryFolder(): unknown;
+   libraryFolder(): Folder;
    /**
     * the collection of folders residing on the Local machine
     */
-   localDomain(): unknown;
+   localDomain(): LocalDomainObject;
    /**
     * The user's Movies folder
     */
-   moviesFolder(): unknown;
+   moviesFolder(): Folder;
    /**
     * The user's Music folder
     */
-   musicFolder(): unknown;
+   musicFolder(): Folder;
    /**
     * the collection of folders residing on the Network
     */
-   networkDomain(): unknown;
+   networkDomain(): NetworkDomainObject;
    /**
     * The user's Pictures folder
     */
-   picturesFolder(): unknown;
+   picturesFolder(): Folder;
    /**
     * The user's Preferences folder
     */
-   preferencesFolder(): unknown;
+   preferencesFolder(): Folder;
    /**
     * The user's Public folder
     */
-   publicFolder(): unknown;
+   publicFolder(): Folder;
    /**
     * The Scripting Additions folder
     */
-   scriptingAdditionsFolder(): unknown;
+   scriptingAdditionsFolder(): Folder;
    /**
     * The user's Scripts folder
     */
-   scriptsFolder(): unknown;
+   scriptsFolder(): Folder;
    /**
     * The Shared Documents folder
     */
-   sharedDocumentsFolder(): unknown;
+   sharedDocumentsFolder(): Folder;
    /**
     * The user's Sites folder
     */
-   sitesFolder(): unknown;
+   sitesFolder(): Folder;
    /**
     * The Speakable Items folder
     */
-   speakableItemsFolder(): unknown;
+   speakableItemsFolder(): Folder;
    /**
     * the disk from which Mac OS X was loaded
     */
-   startupDisk(): unknown;
+   startupDisk(): Disk;
    /**
     * the collection of folders belonging to the System
     */
-   systemDomain(): unknown;
+   systemDomain(): SystemDomainObject;
    /**
     * The Temporary Items folder
     */
-   temporaryItemsFolder(): unknown;
+   temporaryItemsFolder(): Folder;
    /**
     * The user's Trash folder
     */
-   trash(): unknown;
+   trash(): Folder;
    /**
     * the collection of folders belonging to the User
     */
-   userDomain(): unknown;
+   userDomain(): UserDomainObject;
    /**
     * The Utilities folder
     */
-   utilitiesFolder(): unknown;
+   utilitiesFolder(): Folder;
    /**
     * The Automator Workflows folder
     */
-   workflowsFolder(): unknown;
+   workflowsFolder(): Folder;
  }
 
  /* tslint:disable */
@@ -2858,7 +2858,7 @@ export namespace SystemEvents {
    /**
     * the class of the window, which identifies its function
     */
-   class(): unknown;
+   class(): string;
    /**
     * the accessibility description, if available; otherwise, the role description
     */
@@ -3000,7 +3000,7 @@ export namespace SystemEvents {
    /**
     * The scripting definition of the System Events application
     */
-   scriptingDefinition(): unknown;
+   scriptingDefinition(): ScriptingDefinitionObject;
  }
     
     // Records
@@ -3132,7 +3132,7 @@ export namespace SystemEvents {
       /**
        * the folder action message to process
        */
-      folderActionCode: unknown;
+      folderActionCode: "items added" | "items removed" | "window closed" | "window moved" | "window opened";
       /**
        * a list of items for the folder action message to process
        */
