@@ -67,7 +67,7 @@
     "indent-string": "^3.2.0",
     "is-keyword": "^1.2.2",
     "is-var-name": "^2.0.0",
-    "json-schema-to-typescript": "^5.4.0",
+    "json-schema-to-typescript": "^10.1.5",
     "meow": "^5.0.0"
   }
 }
