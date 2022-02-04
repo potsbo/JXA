@@ -52,6 +52,10 @@ const isClass = (node: Node): node is Class => {
 const isClassExtension = (node: Node): node is ClassExtension => {
     return node.name === "class-extension";
 };
+const isEnumerationExtension = (node: Node): node is Enumeration => {
+    return node.name === "enumeration";
+};
+
 
 interface Command extends RootNode {
     name: "command";
@@ -69,7 +73,14 @@ interface Class extends RootNode {
     name: "class";
 }
 
-const convertJSONSchemaType = (type: string): string => {
+interface Enumeration extends RootNode {
+    name: "enumeration";
+}
+
+const convertJSONSchemaType = (type: string, typeDefs: any): string => {
+    if (typeDefs[type]) {
+        return "string";
+    }
     switch (type) {
         case "text":
             return "string";
@@ -114,7 +125,7 @@ const createOptionalParameter = (name: string, parameters: Node[]): Promise<stri
         return {
             name: camelCase(param.attributes.name),
             description: param.attributes.description,
-            type: convertJSONSchemaType(param.attributes.type)
+            type: convertJSONSchemaType(param.attributes.type, {})
         }
     });
     const properties: { [index: string]: any } = {};
@@ -139,7 +150,7 @@ const createOptionalParameter = (name: string, parameters: Node[]): Promise<stri
 };
 
 
-const recordToJSONSchema = (command: Record | Class | ClassExtension): JSONSchema => {
+const recordToJSONSchema = (command: Record | Class | ClassExtension, typeDefs: { [key: string]: { enums: string[] } }): JSONSchema => {
     // https://www.npmjs.com/package/json-schema-to-typescript
     const pascalCaseName = isClassExtension(command) ? pascalCase(command.attributes.extends) : pascalCase(command.attributes.name);
     const description = command.attributes.description;
@@ -150,14 +161,17 @@ const recordToJSONSchema = (command: Record | Class | ClassExtension): JSONSchem
         return {
             name: camelCase(param.attributes.name),
             description: param.attributes.description,
-            type: convertJSONSchemaType(param.attributes.type)
+            type: convertJSONSchemaType(param.attributes.type, typeDefs),
+            enum: typeDefs[param.attributes.type]?.enums,
         }
     });
+
     const properties: { [index: string]: any } = {};
     propertyMap.forEach(prop => {
         properties[prop.name] = {
             type: prop.type,
-            description: prop.description
+            description: prop.description,
+            enum: prop.enum,
         }
     });
     const required = propertiesList.filter(param => {
@@ -262,6 +276,7 @@ export const transform = async (namespace: string, sdefContent: string) => {
     const records: Record[] = [];
     const classes: Class[] = [];
     const classExtensions: ClassExtension[] = [];
+    const enumerations: Enumeration[] = [];
     // TODO: support enum
     suites.forEach(suite => {
         suite.children.forEach((node: Node) => {
@@ -273,17 +288,26 @@ export const transform = async (namespace: string, sdefContent: string) => {
                 classes.push(node)
             } else if (isClassExtension(node)) {
                 classExtensions.push(node);
+            } else if (isEnumerationExtension(node)) {
+                enumerations.push(node)
             }
         })
     });
+
+    const typeDefs: { [key: string]: { enums: string[]} } = {};
+    enumerations.forEach(e => {
+        typeDefs[e.attributes.name] = {
+            enums: e.children.filter(c => c.type === "element").map(c => c.attributes.name)
+        };
+    });
     const recordSchemaList = records.map(record => {
-        return recordToJSONSchema(record);
+        return recordToJSONSchema(record, typeDefs);
     });
     const classSchemaList = classes.map(node => {
-        return recordToJSONSchema(node);
+        return recordToJSONSchema(node, typeDefs);
     });
     const classExtendSchemaList = classExtensions.map(node => {
-        return recordToJSONSchema(node);
+        return recordToJSONSchema(node, typeDefs);
     });
     const recordDefinitions = await schemaToInterfaces(recordSchemaList);
     const classDefinitions = await schemaToInterfaces(classSchemaList);

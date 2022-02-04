@@ -44,7 +44,7 @@ export namespace SystemEvents {
    /**
     * the overall look of buttons, menus and windows
     */
-   appearance(): any;
+   appearance(): "blue" | "graphite";
    /**
     * Is font smoothing on?
     */
@@ -56,7 +56,7 @@ export namespace SystemEvents {
    /**
     * the method used for smoothing fonts
     */
-   fontSmoothingStyle(): any;
+   fontSmoothingStyle(): "automatic" | "light" | "medium" | "standard" | "strong";
    /**
     * color used for hightlighting selected text and lists
     */
@@ -76,7 +76,7 @@ export namespace SystemEvents {
    /**
     * the action performed by clicking the scroll bar
     */
-   scrollBarAction(): any;
+   scrollBarAction(): "jump to here" | "jump to next page";
    /**
     * Is smooth scrolling used?
     */
@@ -148,7 +148,7 @@ export namespace SystemEvents {
    /**
     * action to perform on media insertion
     */
-   insertionAction(): any;
+   insertionAction(): "ask what to do" | "ignore" | "open application" | "run a script";
  }
 
  /**
@@ -232,11 +232,11 @@ export namespace SystemEvents {
    /**
     * minimization effect
     */
-   minimizeEffect(): any;
+   minimizeEffect(): "genie" | "scale";
    /**
     * location on screen
     */
-   screenEdge(): any;
+   screenEdge(): "bottom" | "left" | "right";
  }
 
  /**
@@ -650,7 +650,22 @@ export namespace SystemEvents {
    /**
     * the file system format of this disk
     */
-   format(): any;
+   format:
+     | "Apple Photo format"
+     | "AppleShare format"
+     | "audio format"
+     | "High Sierra format"
+     | "ISO 9660 format"
+     | "Mac OS Extended format"
+     | "Mac OS format"
+     | "MSDOS format"
+     | "NFS format"
+     | "ProDOS format"
+     | "QuickTake format"
+     | "UDF format"
+     | "UFS format"
+     | "unknown format"
+     | "WebDAV format";
    /**
     * the number of free bytes left on the disk
     */
@@ -1835,11 +1850,11 @@ export namespace SystemEvents {
    /**
     * mode in which the movie will be presented
     */
-   presentationMode(): any;
+   presentationMode(): "normal" | "slide show";
    /**
     * size at which the movie will be presented
     */
-   presentationSize(): any;
+   presentationSize(): "current" | "double" | "half" | "normal" | "screen";
    /**
     * is this a stored streaming movie?
     */
@@ -2074,7 +2089,7 @@ export namespace SystemEvents {
    /**
     * how errors are handled
     */
-   errorHandling(): any;
+   errorHandling(): "standard" | "detailed";
    /**
     * for fax number
     */
@@ -2296,7 +2311,7 @@ export namespace SystemEvents {
    /**
     * The type of access to this property
     */
-   access(): any;
+   access(): "none" | "read only" | "read write" | "write only";
    /**
     * The description of the property
     */
