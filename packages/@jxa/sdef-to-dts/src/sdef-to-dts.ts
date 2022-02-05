@@ -105,16 +105,6 @@ const convertJSONSchemaType = (type: string, typeDefs: { [index: string] : TypeD
             return { type: "integer" };
         case "boolean":
             return { type: "boolean" };
-        case "rectangle":
-        case "Any":
-        case "any":
-        case "record":
-        case "alias":
-        case "bounding rectangle":
-        case "RGB color":
-        case "RGBColor":
-        case "type class":
-            return { type: "any" };
     }
 
     return { type: "any" };
@@ -129,7 +119,6 @@ const convertType = (type: string, namespace: string, definedJSONSchemaList: JSO
         case "boolean":
             return "boolean";
         case "Any":
-        case "RGB color":
         case "type class":
             return "any";
     }
