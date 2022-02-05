@@ -84,7 +84,7 @@ type TypeDef = {
     tsType: string;
 }
 
-const convertJSONSchemaType = (type: string, typeDefs: { [index: string] : TypeDef}): { type: string, enum?: string[] } | { tsType: string } => {
+const convertJSONSchemaType = (type: string, typeDefs: { [index: string] : TypeDef}): JSONSchema => {
     if (typeDefs[type]) {
         return typeDefs[type];
     }
@@ -168,33 +168,27 @@ const recordToJSONSchema = (command: Record | Class | ClassExtension, typeDefs: 
         return node.type === "element" && node.name === "property" && typeof node.attributes === "object";
     });
     const propertyMap = propertiesList.map(param => {
+        let typeInfo: JSONSchema = {}
         if (param.attributes.type === undefined) {
             const patterns = param.children
                 .filter((n: any) => n.name === "type" && n.attributes.hidden !== "yes")
                 .map((n: any) => n.attributes.type)
                 .map((n: string) => convertJSONSchemaType(n, typeDefs));
-            const val = {
-                name: camelCase(param.attributes.name),
-                description: param.attributes.description,
-                typeInfo: {
-                    anyOf: patterns.map((p: any) => {
-                        return {
-                            ...p,
-                            description: param.attributes.description
-                        };
-                    })
-                }
+            typeInfo = {
+                anyOf: patterns
             };
-            return val;
+        } else {
+            typeInfo = convertJSONSchemaType(param.attributes.type, typeDefs);
         }
+
         return {
             name: camelCase(param.attributes.name),
             description: param.attributes.description,
-            typeInfo: convertJSONSchemaType(param.attributes.type, typeDefs)
+            typeInfo: typeInfo,
         };
     });
 
-    const properties: { [index: string]: any } = {};
+    const properties: { [index: string]: JSONSchema } = {};
     propertyMap.forEach(prop => {
         properties[prop.name] = {
             ...prop.typeInfo,
