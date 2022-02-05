@@ -21,7 +21,7 @@ export namespace SystemEvents {
    /**
     * path to user's home directory
     */
-   homeDirectory(): unknown;
+   homeDirectory(): string | File;
    /**
     * user's short name
     */
@@ -29,7 +29,7 @@ export namespace SystemEvents {
    /**
     * path to user's picture. Can be set for current user only!
     */
-   picturePath(): unknown;
+   picturePath(): string | File;
  }
 
  /* tslint:disable */
@@ -62,7 +62,7 @@ export namespace SystemEvents {
    /**
     * color used for hightlighting selected text and lists
     */
-   highlightColor(): unknown;
+   highlightColor(): ("blue" | "gold" | "graphite" | "green" | "orange" | "purple" | "red" | "silver") | unknown;
    /**
     * the number of recent applications to track
     */
@@ -144,11 +144,11 @@ export namespace SystemEvents {
    /**
     * application to launch or activate on the insertion of media
     */
-   customApplication(): unknown;
+   customApplication(): string | undefined;
    /**
     * AppleScript to launch or activate on the insertion of media
     */
-   customScript(): unknown;
+   customScript(): string | undefined;
    /**
     * action to perform on media insertion
     */
@@ -185,7 +185,7 @@ export namespace SystemEvents {
    /**
     * path to file used as desktop picture
     */
-   picture(): unknown;
+   picture(): string | File;
    /**
     * never, using interval, using login, after sleep
     */
@@ -193,7 +193,7 @@ export namespace SystemEvents {
    /**
     * path to folder containing pictures for changing desktop background
     */
-   picturesFolder(): unknown;
+   picturesFolder(): string | File;
    /**
     * turn on for random ordering of changing desktop pictures
     */
@@ -556,15 +556,15 @@ export namespace SystemEvents {
    /**
     * the OSType identifying the application that created the alias
     */
-   creatorType(): unknown;
+   creatorType(): string | unknown;
    /**
     * the application that will launch if the alias is opened
     */
-   defaultApplication(): unknown;
+   defaultApplication(): DiskItem | unknown;
    /**
     * the OSType identifying the type of data contained in the alias
     */
-   fileType(): unknown;
+   fileType(): string | unknown;
    /**
     * The kind of alias, as shown in Finder
     */
@@ -701,7 +701,7 @@ export namespace SystemEvents {
    /**
     * the server on which the disk resides, AFP volumes only
     */
-   server(): unknown;
+   server(): string | unknown;
    /**
     * Is this disk the boot disk?
     */
@@ -709,7 +709,7 @@ export namespace SystemEvents {
    /**
     * the zone in which the disk's server resides, AFP volumes only
     */
-   zone(): unknown;
+   zone(): string | unknown;
  }
 
  /* tslint:disable */
@@ -876,15 +876,15 @@ export namespace SystemEvents {
    /**
     * the OSType identifying the application that created the file
     */
-   creatorType(): unknown;
+   creatorType(): string | unknown;
    /**
     * the application that will launch if the file is opened
     */
-   defaultApplication(): unknown;
+   defaultApplication(): DiskItem | unknown;
    /**
     * the OSType identifying the type of data contained in the file
     */
-   fileType(): unknown;
+   fileType(): string | unknown;
    /**
     * The kind of file, as shown in Finder
     */
@@ -1042,11 +1042,11 @@ export namespace SystemEvents {
    /**
     * the bounding rectangle of the movie file
     */
-   bounds(): unknown;
+   bounds(): number;
    /**
     * the dimensions the movie has when it is not scaled
     */
-   naturalDimensions(): unknown;
+   naturalDimensions(): number;
    /**
     * the preview duration of the movie file
     */
@@ -1104,7 +1104,7 @@ export namespace SystemEvents {
    /**
     * a reference to the application file from which this process was launched
     */
-   applicationFile(): unknown;
+   applicationFile(): Alias | File;
  }
 
  /* tslint:disable */
@@ -1129,7 +1129,7 @@ export namespace SystemEvents {
    /**
     * the current value of the attribute
     */
-   value(): unknown;
+   value(): unknown | number | string | List | boolean;
  }
 
  /* tslint:disable */
@@ -1447,7 +1447,7 @@ export namespace SystemEvents {
    /**
     * the file from which the process was launched
     */
-   file(): unknown;
+   file(): Alias | File;
    /**
     * the OSType of the file type of the process
     */
@@ -1475,7 +1475,7 @@ export namespace SystemEvents {
    /**
     * the short name of the file from which the process was launched
     */
-   shortName(): unknown;
+   shortName(): string | undefined;
    /**
     * the size of the partition with which the process was launched
     */
@@ -1487,7 +1487,7 @@ export namespace SystemEvents {
    /**
     * Is the process' layer visible?
     */
-   visible(): unknown;
+   visible(): boolean;
  }
 
  /* tslint:disable */
@@ -1708,7 +1708,7 @@ export namespace SystemEvents {
    /**
     * a more complete description of the UI element and its capabilities
     */
-   accessibilityDescription(): unknown;
+   accessibilityDescription(): string | undefined;
    /**
     * the class of the UI Element, which identifies it function
     */
@@ -1716,11 +1716,11 @@ export namespace SystemEvents {
    /**
     * the accessibility description, if available; otherwise, the role description
     */
-   description(): unknown;
+   description(): string | undefined;
    /**
     * Is the UI element enabled? ( Does it accept clicks? )
     */
-   enabled(): unknown;
+   enabled(): boolean | undefined;
    /**
     * a list of every UI element contained in this UI element and its child UI elements, to the limits of the tree
     */
@@ -1728,19 +1728,19 @@ export namespace SystemEvents {
    /**
     * Is the focus on this UI element?
     */
-   focused(): unknown;
+   focused(): boolean | undefined;
    /**
     * an elaborate description of the UI element and its capabilities
     */
-   help(): unknown;
+   help(): string | undefined;
    /**
     * the maximum value that the UI element can take on
     */
-   maximumValue(): unknown;
+   maximumValue(): number | undefined;
    /**
     * the minimum value that the UI element can take on
     */
-   minimumValue(): unknown;
+   minimumValue(): number | undefined;
    /**
     * the name of the UI Element, which identifies it within its container
     */
@@ -1748,11 +1748,11 @@ export namespace SystemEvents {
    /**
     * the orientation of the UI element
     */
-   orientation(): unknown;
+   orientation(): string | undefined;
    /**
     * the position of the UI element
     */
-   position(): unknown;
+   position(): number | undefined;
    /**
     * an encoded description of the UI element and its capabilities
     */
@@ -1764,15 +1764,15 @@ export namespace SystemEvents {
    /**
     * Is the UI element selected?
     */
-   selected(): unknown;
+   selected(): boolean | undefined;
    /**
     * the size of the UI element
     */
-   size(): unknown;
+   size(): number | undefined;
    /**
     * an encoded description of the UI element and its capabilities
     */
-   subrole(): unknown;
+   subrole(): string | undefined;
    /**
     * the title of the UI element as it appears on the screen
     */
@@ -1780,7 +1780,7 @@ export namespace SystemEvents {
    /**
     * the current value of the UI element
     */
-   value(): unknown;
+   value(): unknown | number | string;
  }
 
  /* tslint:disable */
@@ -1845,7 +1845,7 @@ export namespace SystemEvents {
    /**
     * the value of the property list item
     */
-   value(): unknown;
+   value(): number | boolean | Date | List | unknown | string | Data;
  }
 
  /* tslint:disable */
@@ -2004,7 +2004,7 @@ export namespace SystemEvents {
    /**
     * the current dimensions of the track
     */
-   dimensions(): unknown;
+   dimensions(): number;
    /**
     * the duration of the track, in terms of the time scale
     */
@@ -2073,7 +2073,7 @@ export namespace SystemEvents {
    /**
     * the value of the XML attribute
     */
-   value(): unknown;
+   value(): boolean | Date | List | number | unknown | string;
  }
 
  /* tslint:disable */
@@ -2123,7 +2123,7 @@ export namespace SystemEvents {
    /**
     * the value of the XML element
     */
-   value(): unknown;
+   value(): boolean | Date | List | number | unknown | string;
  }
 
  /* tslint:disable */
@@ -2854,7 +2854,7 @@ export namespace SystemEvents {
    /**
     * a more complete description of the window and its capabilities
     */
-   accessibilityDescription(): unknown;
+   accessibilityDescription(): string | undefined;
    /**
     * the class of the window, which identifies its function
     */
@@ -2862,11 +2862,11 @@ export namespace SystemEvents {
    /**
     * the accessibility description, if available; otherwise, the role description
     */
-   description(): unknown;
+   description(): string | undefined;
    /**
     * Is the window enabled? ( Does it accept clicks? )
     */
-   enabled(): unknown;
+   enabled(): boolean | undefined;
    /**
     * a list of every UI element contained in this window and its child UI elements, to the limits of the tree
     */
@@ -2874,19 +2874,19 @@ export namespace SystemEvents {
    /**
     * Is the focus on this window?
     */
-   focused(): unknown;
+   focused(): boolean | undefined;
    /**
     * an elaborate description of the window and its capabilities
     */
-   help(): unknown;
+   help(): string | undefined;
    /**
     * the maximum value that the UI element can take on
     */
-   maximumValue(): unknown;
+   maximumValue(): number | undefined;
    /**
     * the minimum value that the UI element can take on
     */
-   minimumValue(): unknown;
+   minimumValue(): number | undefined;
    /**
     * the name of the window, which identifies it within its container
     */
@@ -2894,11 +2894,11 @@ export namespace SystemEvents {
    /**
     * the orientation of the window
     */
-   orientation(): unknown;
+   orientation(): string | undefined;
    /**
     * the position of the window
     */
-   position(): unknown;
+   position(): number | undefined;
    /**
     * an encoded description of the window and its capabilities
     */
@@ -2910,15 +2910,15 @@ export namespace SystemEvents {
    /**
     * Is the window selected?
     */
-   selected(): unknown;
+   selected(): boolean | undefined;
    /**
     * the size of the window
     */
-   size(): unknown;
+   size(): number | undefined;
    /**
     * an encoded description of the window and its capabilities
     */
-   subrole(): unknown;
+   subrole(): string | undefined;
    /**
     * the title of the window as it appears on the screen
     */
@@ -2926,7 +2926,7 @@ export namespace SystemEvents {
    /**
     * the current value of the window
     */
-   value(): unknown;
+   value(): unknown | number | string;
  }
 
  /* tslint:disable */

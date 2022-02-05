@@ -105,9 +105,12 @@ const convertJSONSchemaType = (type: string, typeDefs: { [index: string] : TypeD
             return { type: "integer" };
         case "boolean":
             return { type: "boolean" };
+        case "missing value":
+            // TOOD: maybe `null`
+            return { tsType: "undefined" };
     }
 
-    return { type: "any" };
+    return { tsType: "unknown" };
 };
 const convertType = (type: string, namespace: string, definedJSONSchemaList: JSONSchema[]): "number" | "string" | "boolean" | string => {
     switch (type) {
@@ -171,11 +174,30 @@ const recordToJSONSchema = (command: Record | Class | ClassExtension, typeDefs: 
         return node.type === "element" && node.name === "property" && typeof node.attributes === "object";
     });
     const propertyMap = propertiesList.map(param => {
+        if (param.attributes.type === undefined) {
+            const patterns = param.children
+                .filter((n: any) => n.name === "type" && n.attributes.hidden !== "yes")
+                .map((n: any) => n.attributes.type)
+                .map((n: string) => convertJSONSchemaType(n, typeDefs));
+            const val = {
+                name: camelCase(param.attributes.name),
+                description: param.attributes.description,
+                typeInfo: {
+                    anyOf: patterns.map((p: any) => {
+                        return {
+                            ...p,
+                            description: param.attributes.description
+                        };
+                    })
+                }
+            };
+            return val;
+        }
         return {
             name: camelCase(param.attributes.name),
             description: param.attributes.description,
-            typeInfo: convertJSONSchemaType(param.attributes.type, typeDefs),
-        }
+            typeInfo: convertJSONSchemaType(param.attributes.type, typeDefs)
+        };
     });
 
     const properties: { [index: string]: any } = {};
