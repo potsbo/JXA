@@ -77,9 +77,17 @@ interface Enumeration extends RootNode {
     name: "enumeration";
 }
 
-const convertJSONSchemaType = (type: string, typeDefs: any): { type: string, enum?: string[] } | { tsType: string } => {
+type TypeDef = {
+    type: 'enum';
+    jsonSchemaType: {
+        type: 'string';
+        enum: string[];
+    }
+}
+
+const convertJSONSchemaType = (type: string, typeDefs: { [index: string] : TypeDef}): { type: string, enum?: string[] } | { tsType: string } => {
     if (typeDefs[type]) {
-        return { type: "string", enum: typeDefs[type].enums };
+        return typeDefs[type].jsonSchemaType;
     }
     switch (type) {
         case "type":
@@ -130,7 +138,7 @@ const convertType = (type: string, namespace: string, definedJSONSchemaList: JSO
     return isTypeDefinedAsRecord ? `${namespace}.${otherType}` : "any";
 };
 
-const createOptionalParameter = (name: string, parameters: Node[], typeDefs: { [key: string]: { enums: string[] } }): Promise<string | null> => {
+const createOptionalParameter = (name: string, parameters: Node[], typeDefs: { [key: string]: TypeDef }): Promise<string | null> => {
     if (parameters.length === 0) {
         return Promise.resolve(null);
     }
@@ -163,7 +171,7 @@ const createOptionalParameter = (name: string, parameters: Node[], typeDefs: { [
 };
 
 
-const recordToJSONSchema = (command: Record | Class | ClassExtension, typeDefs: { [key: string]: { enums: string[] } }): JSONSchema => {
+const recordToJSONSchema = (command: Record | Class | ClassExtension, typeDefs: { [key: string]: TypeDef }): JSONSchema => {
     // https://www.npmjs.com/package/json-schema-to-typescript
     const pascalCaseName = isClassExtension(command) ? pascalCase(command.attributes.extends) : pascalCase(command.attributes.name);
     const description = command.attributes.description;
@@ -175,7 +183,6 @@ const recordToJSONSchema = (command: Record | Class | ClassExtension, typeDefs: 
             name: camelCase(param.attributes.name),
             description: param.attributes.description,
             typeInfo: convertJSONSchemaType(param.attributes.type, typeDefs),
-            enum: typeDefs[param.attributes.type]?.enums,
         }
     });
 
@@ -184,10 +191,6 @@ const recordToJSONSchema = (command: Record | Class | ClassExtension, typeDefs: 
         properties[prop.name] = {
             ...prop.typeInfo,
             description: prop.description,
-        }
-
-        if (prop.enum) {
-            properties[prop.name].enum = prop.enum;
         }
     });
     const required = propertiesList.filter(param => {
@@ -310,10 +313,14 @@ export const transform = async (namespace: string, sdefContent: string) => {
         })
     });
 
-    const typeDefs: { [key: string]: { enums: string[]} } = {};
+    const typeDefs: { [key: string]: TypeDef } = {};
     enumerations.forEach(e => {
         typeDefs[e.attributes.name] = {
-            enums: e.children.filter(c => c.type === "element").map(c => c.attributes.name)
+            type: "enum",
+            jsonSchemaType: {
+                type: 'string',
+                enum: e.children.filter(c => c.type === "element").map(c => c.attributes.name)
+            }
         };
     });
     const recordSchemaList = records.map(record => {
