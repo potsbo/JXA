@@ -78,21 +78,15 @@ interface Enumeration extends RootNode {
 }
 
 type TypeDef = {
-    type: 'enum';
-    jsonSchemaType: {
-        type: 'string';
-        enum: string[];
-    }
+    type: 'string';
+    enum: string[];
 } | {
-    type: "object",
-    jsonSchemaType: {
-        tsType: string;
-    }
+    tsType: string;
 }
 
 const convertJSONSchemaType = (type: string, typeDefs: { [index: string] : TypeDef}): { type: string, enum?: string[] } | { tsType: string } => {
     if (typeDefs[type]) {
-        return typeDefs[type].jsonSchemaType;
+        return typeDefs[type];
     }
     switch (type) {
         case "type":
@@ -330,42 +324,27 @@ export const transform = async (namespace: string, sdefContent: string) => {
     const typeDefs: { [key: string]: TypeDef } = {};
     enumerations.forEach(e => {
         typeDefs[e.attributes.name] = {
-            type: "enum",
-            jsonSchemaType: {
-                type: 'string',
-                enum: e.children.filter(c => c.type === "element").map(c => c.attributes.name)
-            }
+            type: "string",
+            enum: e.children.filter(c => c.type === "element").map(c => c.attributes.name)
         };
     });
     records.forEach(e => {
         typeDefs[e.attributes.name] = {
-            type: "object",
-            jsonSchemaType: {
-                tsType: pascalCase(e.attributes.name),
-            }
+            tsType: pascalCase(e.attributes.name)
         };
-    })
+    });
 
     classes.forEach(e => {
         typeDefs[e.attributes.name] = {
-            type: "object",
-            jsonSchemaType: {
-                tsType: pascalCase(e.attributes.name),
-            }
+            tsType: pascalCase(e.attributes.name)
         };
-    })
+    });
     typeDefs["date"] = {
-        type: "object",
-        jsonSchemaType: {
-            tsType: "Date",
-        }
-    }
+        tsType: "Date"
+    };
     typeDefs["file"] = {
-        type: "object",
-        jsonSchemaType: {
-            tsType: "File",
-        }
-    }
+        tsType: "File"
+    };
 
     const recordSchemaList = records.map(record => {
         return recordToJSONSchema(record, typeDefs);
