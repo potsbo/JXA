@@ -445,7 +445,7 @@ export namespace SystemEvents {
    /**
     * path to the screen saver module
     */
-   path(): unknown;
+   path(): Alias;
    /**
     * effect to use when displaying picture-based screen savers (slideshow, collage, or mosaic)
     */
@@ -1230,7 +1230,7 @@ export namespace SystemEvents {
    /**
     * a reference to the desk accessory file from which this process was launched
     */
-   deskAccessoryFile(): unknown;
+   deskAccessoryFile(): Alias;
  }
 
  /* tslint:disable */

@@ -83,6 +83,11 @@ type TypeDef = {
         type: 'string';
         enum: string[];
     }
+} | {
+    type: "object",
+    jsonSchemaType: {
+        tsType: string;
+    }
 }
 
 const convertJSONSchemaType = (type: string, typeDefs: { [index: string] : TypeDef}): { type: string, enum?: string[] } | { tsType: string } => {
@@ -111,10 +116,8 @@ const convertJSONSchemaType = (type: string, typeDefs: { [index: string] : TypeD
         case "type class":
             return { type: "any" };
     }
-    if (typeof type !== "string") {
-        return { type: "any" };
-    }
-    return { tsType: pascalCase(type) };
+
+    return { type: "any" };
 };
 const convertType = (type: string, namespace: string, definedJSONSchemaList: JSONSchema[]): "number" | "string" | "boolean" | string => {
     switch (type) {
@@ -323,6 +326,36 @@ export const transform = async (namespace: string, sdefContent: string) => {
             }
         };
     });
+    records.forEach(e => {
+        typeDefs[e.attributes.name] = {
+            type: "object",
+            jsonSchemaType: {
+                tsType: pascalCase(e.attributes.name),
+            }
+        };
+    })
+
+    classes.forEach(e => {
+        typeDefs[e.attributes.name] = {
+            type: "object",
+            jsonSchemaType: {
+                tsType: pascalCase(e.attributes.name),
+            }
+        };
+    })
+    typeDefs["date"] = {
+        type: "object",
+        jsonSchemaType: {
+            tsType: "Date",
+        }
+    }
+    typeDefs["file"] = {
+        type: "object",
+        jsonSchemaType: {
+            tsType: "File",
+        }
+    }
+
     const recordSchemaList = records.map(record => {
         return recordToJSONSchema(record, typeDefs);
     });
