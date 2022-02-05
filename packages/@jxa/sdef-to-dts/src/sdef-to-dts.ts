@@ -52,6 +52,10 @@ const isClass = (node: Node): node is Class => {
 const isClassExtension = (node: Node): node is ClassExtension => {
     return node.name === "class-extension";
 };
+const isEnumerationExtension = (node: Node): node is Enumeration => {
+    return node.name === "enumeration";
+};
+
 
 interface Command extends RootNode {
     name: "command";
@@ -69,21 +73,38 @@ interface Class extends RootNode {
     name: "class";
 }
 
-const convertJSONSchemaType = (type: string): string => {
+interface Enumeration extends RootNode {
+    name: "enumeration";
+}
+
+type TypeDef = {
+    type: 'string';
+    enum: string[];
+} | {
+    tsType: string;
+}
+
+const convertJSONSchemaType = (type: string, typeDefs: { [index: string] : TypeDef}): JSONSchema => {
+    if (typeDefs[type]) {
+        return typeDefs[type];
+    }
     switch (type) {
+        case "type":
         case "text":
-            return "string";
+            return { type: "string" };
+        case "real":
+            return { type: "number" };
         case "number":
         case "integer":
-            return "integer";
+            return { type: "integer" };
         case "boolean":
-            return "boolean";
-        case "Any":
-        case "type class":
-            return "any";
+            return { type: "boolean" };
+        case "missing value":
+            // TOOD: maybe `null`
+            return { tsType: "undefined" };
     }
-    // TODO: can we support custom type?
-    return "any";
+
+    return { tsType: "unknown" };
 };
 const convertType = (type: string, namespace: string, definedJSONSchemaList: JSONSchema[]): "number" | "string" | "boolean" | string => {
     switch (type) {
@@ -106,7 +127,7 @@ const convertType = (type: string, namespace: string, definedJSONSchemaList: JSO
     return isTypeDefinedAsRecord ? `${namespace}.${otherType}` : "any";
 };
 
-const createOptionalParameter = (name: string, parameters: Node[]): Promise<string | null> => {
+const createOptionalParameter = (name: string, parameters: Node[], typeDefs: { [key: string]: TypeDef }): Promise<string | null> => {
     if (parameters.length === 0) {
         return Promise.resolve(null);
     }
@@ -114,13 +135,13 @@ const createOptionalParameter = (name: string, parameters: Node[]): Promise<stri
         return {
             name: camelCase(param.attributes.name),
             description: param.attributes.description,
-            type: convertJSONSchemaType(param.attributes.type)
+            typeInfo: convertJSONSchemaType(param.attributes.type, typeDefs)
         }
     });
     const properties: { [index: string]: any } = {};
     propertyMap.forEach(prop => {
         properties[prop.name] = {
-            type: prop.type,
+            ...prop.typeInfo,
             description: prop.description
         }
     });
@@ -139,7 +160,7 @@ const createOptionalParameter = (name: string, parameters: Node[]): Promise<stri
 };
 
 
-const recordToJSONSchema = (command: Record | Class | ClassExtension): JSONSchema => {
+const recordToJSONSchema = (command: Record | Class | ClassExtension, typeDefs: { [key: string]: TypeDef }): JSONSchema => {
     // https://www.npmjs.com/package/json-schema-to-typescript
     const pascalCaseName = isClassExtension(command) ? pascalCase(command.attributes.extends) : pascalCase(command.attributes.name);
     const description = command.attributes.description;
@@ -147,17 +168,31 @@ const recordToJSONSchema = (command: Record | Class | ClassExtension): JSONSchem
         return node.type === "element" && node.name === "property" && typeof node.attributes === "object";
     });
     const propertyMap = propertiesList.map(param => {
+        let typeInfo: JSONSchema = {}
+        if (param.attributes.type === undefined) {
+            const patterns = param.children
+                .filter((n: any) => n.name === "type" && n.attributes.hidden !== "yes")
+                .map((n: any) => n.attributes.type)
+                .map((n: string) => convertJSONSchemaType(n, typeDefs));
+            typeInfo = {
+                anyOf: patterns
+            };
+        } else {
+            typeInfo = convertJSONSchemaType(param.attributes.type, typeDefs);
+        }
+
         return {
             name: camelCase(param.attributes.name),
             description: param.attributes.description,
-            type: convertJSONSchemaType(param.attributes.type)
-        }
+            typeInfo: typeInfo,
+        };
     });
-    const properties: { [index: string]: any } = {};
+
+    const properties: { [index: string]: JSONSchema } = {};
     propertyMap.forEach(prop => {
         properties[prop.name] = {
-            type: prop.type,
-            description: prop.description
+            ...prop.typeInfo,
+            description: prop.description,
         }
     });
     const required = propertiesList.filter(param => {
@@ -175,7 +210,7 @@ const recordToJSONSchema = (command: Record | Class | ClassExtension): JSONSchem
     }
 };
 
-const commandToDeclare = async (namespace: string, command: Command, recordSchema: JSONSchema[], optionalMap: Map<string, number>): Promise<{
+const commandToDeclare = async (namespace: string, command: Command, recordSchema: JSONSchema[], optionalMap: Map<string, number>, typeDefs: any): Promise<{
     header: string;
     body: string;
 }> => {
@@ -207,7 +242,7 @@ const commandToDeclare = async (namespace: string, command: Command, recordSchem
         optionalParameterTypeName += String(optionalParameterTypeNameCount);
     }
     optionalMap.set(optionalParameterTypeName, optionalParameterTypeNameCount + 1);
-    const optionalParameterType = await createOptionalParameter(optionalParameterTypeName, parameters);
+    const optionalParameterType = await createOptionalParameter(optionalParameterTypeName, parameters, typeDefs);
     const optionalParameters = optionalParameterType ? `option?: ${namespace}.${optionalParameterTypeName}` : "";
     const optionalParameterDoc = optionalParameterType ? `* @param option` : "";
     const result = command.children.filter(node => {
@@ -262,6 +297,7 @@ export const transform = async (namespace: string, sdefContent: string) => {
     const records: Record[] = [];
     const classes: Class[] = [];
     const classExtensions: ClassExtension[] = [];
+    const enumerations: Enumeration[] = [];
     // TODO: support enum
     suites.forEach(suite => {
         suite.children.forEach((node: Node) => {
@@ -273,24 +309,52 @@ export const transform = async (namespace: string, sdefContent: string) => {
                 classes.push(node)
             } else if (isClassExtension(node)) {
                 classExtensions.push(node);
+            } else if (isEnumerationExtension(node)) {
+                enumerations.push(node)
             }
         })
     });
+
+    const typeDefs: { [key: string]: TypeDef } = {};
+    enumerations.forEach(e => {
+        typeDefs[e.attributes.name] = {
+            type: "string",
+            enum: e.children.filter(c => c.type === "element").map(c => c.attributes.name)
+        };
+    });
+    records.forEach(e => {
+        typeDefs[e.attributes.name] = {
+            tsType: pascalCase(e.attributes.name)
+        };
+    });
+
+    classes.forEach(e => {
+        typeDefs[e.attributes.name] = {
+            tsType: pascalCase(e.attributes.name)
+        };
+    });
+    typeDefs["date"] = {
+        tsType: "Date"
+    };
+    typeDefs["file"] = {
+        tsType: "File"
+    };
+
     const recordSchemaList = records.map(record => {
-        return recordToJSONSchema(record);
+        return recordToJSONSchema(record, typeDefs);
     });
     const classSchemaList = classes.map(node => {
-        return recordToJSONSchema(node);
+        return recordToJSONSchema(node, typeDefs);
     });
     const classExtendSchemaList = classExtensions.map(node => {
-        return recordToJSONSchema(node);
+        return recordToJSONSchema(node, typeDefs);
     });
     const recordDefinitions = await schemaToInterfaces(recordSchemaList);
     const classDefinitions = await schemaToInterfaces(classSchemaList);
     const classExtensionDefinitions = await schemaToInterfaces(classExtendSchemaList);
     const optionalBindingMap = new Map<string, number>();
     const functionDefinitions = await Promise.all(commands.map(command => {
-        return commandToDeclare(namespace, command, recordSchemaList.concat(classSchemaList, classExtendSchemaList), optionalBindingMap);
+        return commandToDeclare(namespace, command, recordSchemaList.concat(classSchemaList, classExtendSchemaList), optionalBindingMap, typeDefs);
     }));
     const functionDefinitionHeaders = functionDefinitions.map(def => def.header);
     const functionDefinitionBodies = functionDefinitions.map(def => def.body);
